@@ -1,3 +1,6 @@
+# Ignore test input files
+test.txt
+
 # vscode ignore
 .vscode/
 
