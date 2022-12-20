@@ -14,9 +14,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let lines = io::BufReader::new(file).lines();
 
-    for line in lines{
-
-    }
+    for line in lines {}
 
     Ok(())
 }
