@@ -8,8 +8,26 @@ use std::io::BufRead;
 #[display("move {num} from {begin} to {end}")]
 struct Move {
     num: u32,
-    begin: u32,
-    end: u32,
+    begin: usize,
+    end: usize,
+}
+
+fn operate(moves : &Vec<Move>, crates : &mut Vec<VecDeque<char>>) -> String
+{
+    for m in moves{
+        for i in 0..m.num{
+            let start = m.begin - 1;
+            let dest = m.end - 1;
+            let c = crates[start].pop_back();
+            crates[dest].push_back(c.unwrap());
+        }
+    }
+
+    // Collect the back character from each vector into a string
+    crates[..]
+    .iter()
+    .map(|s| s.back().unwrap())
+    .collect()
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -51,9 +69,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             moves.push(m);
         }
     }
-
-    println!("{:?}", stacks);
-    println!("{:?}", moves);
-
+    // println!("{:?}", stacks);
+    // println!("{:?}", moves);
+    println!("{}", operate(&moves, &mut stacks));
     Ok(())
 }
