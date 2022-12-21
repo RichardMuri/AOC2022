@@ -7,20 +7,45 @@ use std::io::BufRead;
 #[derive(Display, FromStr, Debug, Clone, Copy)]
 #[display("move {num} from {begin} to {end}")]
 struct Move {
-    num: u32,
+    num: usize,
     begin: usize,
     end: usize,
 }
 
 fn operate(moves : &Vec<Move>, crates : &mut Vec<VecDeque<char>>) -> String
 {
+    // Follow each move instruction, moving one crate from the top of one stack
+    // to the other at a time
     for m in moves{
-        for i in 0..m.num{
+        for _ in 0..m.num{
             let start = m.begin - 1;
             let dest = m.end - 1;
             let c = crates[start].pop_back();
             crates[dest].push_back(c.unwrap());
         }
+    }
+
+    // Collect the back character from each vector into a string
+    crates[..]
+    .iter()
+    .map(|s| s.back().unwrap())
+    .collect()
+}
+
+fn operate_improved(moves : &Vec<Move>, crates : &mut Vec<VecDeque<char>>) -> String
+{
+    // Follow each move instruction, moving num crates at a time from the top of
+    // one stack to the other
+    for m in moves{
+        let start = m.begin - 1;
+        let dest = m.end - 1;
+        let crate_ref = &mut crates[start];
+        let stack_range = (crate_ref.len() - m.num)..crate_ref.len();
+
+        // Drain a range of crates
+        let crate_stack = crate_ref.drain(stack_range).collect::<Vec<_>>();
+        // Move the range onto a new stack
+        crates[dest].extend(crate_stack);
     }
 
     // Collect the back character from each vector into a string
@@ -71,6 +96,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
     // println!("{:?}", stacks);
     // println!("{:?}", moves);
-    println!("{}", operate(&moves, &mut stacks));
+    println!("{}", operate(&moves, &mut stacks.clone()));
+    println!("{}", operate_improved(&moves, &mut stacks));
+    // println!("{:?}", stacks);
     Ok(())
 }
